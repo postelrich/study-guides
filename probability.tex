@@ -1,0 +1,161 @@
+\title{Probability Study Guide}
+\date{\today}
+
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\begin{document}
+	\maketitle
+	
+\section{Combinatorics}
+If $r$ experiments are to be performed such that each has $n$ outcomes, there is a total of $n_1, n_2, ..., n_r$ possible outcomes of the $r$ experiments. We use the factorial to find how many different ordered arrangements are possible. When order does not matter, we use the combination formula:
+\begin{align*}
+  C(n,k) = \frac{n!}{(n-r)!r!}
+\end{align*}
+
+\section{Axioms}
+\begin{itemize}
+	\item The sample space is the set of all possible outcomes
+	\item An event is a subset of the sample space:
+	\begin{align*}
+		P(E) = \frac{|E|}{|S|}
+	\end{align*}
+	\item $E\cup F$ consists of all outcomes of E and F
+	\item $E\cap F=EF$ consists of all outcomes that are in both E and F
+	\item if $EF = \emptyset$, E and F do not have any like outcomes and are mutually exclusive
+	\item $E^c$ is the complement of E that contains everything in sample space not in E
+	\item DeMorgan's Laws $(\cup E_i)^c = \cap E^c_i$
+	\item $0 \le P(E) \le 1$
+	\item $P(S) = 1$
+	\item $P(\cap E_i) = \sum P(E_i)$
+\end{itemize}
+
+\section{Propositions}
+\begin{itemize}
+	\item $P(E^c) = 1 - P(E)$
+	\item if $E\subset F$, then $P(E) \le P(F)$
+	\item $P(E \cup F) = P(E) + P(F) - P(EF)$
+	\item $P(\bigcup^n E_i) = \Sigma P(E_i) - \Sigma P(E_{i_1} E_{i_2}) + ... + (-1)^{n+1} P(E_1 E_2 ... E_n)$
+\end{itemize}
+
+\section{Bayes' Theorem}
+Bayes' theorem describes the probability of an event based on prior knowledge of conditions related to the event.
+\begin{align*}
+	P(A|B) = \frac{P(B|A)P(A)}{P(B)}
+\end{align*}
+where $P(A)$ is the prior initial belief in event $A$, $P(A|B)$ is the posterior belief accounting for $B$, and $\frac{P(B|A)}{P(B)}$ is the support that B provides for A. The $P(B)$ can be expanded to
+\begin{align*}
+	P(B) = P(B|A)P(A) + P(B|A^c)P(A^c)
+\end{align*}
+
+\section{Discrete Random Variables}
+A random variable $X$ is a function from a sample space to the real number. With discrete RV's, $X$ take s in countably infinite set of numbers. The probability mass function gives the probability a discrete RV is exactly equal to some value, represented $P(X=i)$. The cumulative distribution function,$F(x) = P(X\le x)$, is the probability a random variable is random variable is equal to or less than some value.
+
+\subsection{Expected Value}
+The expected value of a random variable is the long run average value of repetitions of the experiment it represents.
+
+\begin{align*}
+	E(x) = \sum_{i=1}^{n} x_i p_i\\
+	E(g(x)) = \sum g(x_i)p(x_i)\\
+	E(ax+ b) = aE(x) + b
+\end{align*} 
+
+\subsection{Variance}
+Variance measures how far a set of random numbers are spread out from their mean.
+\begin{align*}
+	var(x) = \sum_i^2 = E(x^2) - [E(x)]^2\\
+	var(x+b) = v(x)\\
+	var(ax) = a^2 var(x)
+\end{align*}
+
+\subsection{Moment Generating Function}
+The expected values $E(X), E(X^2), ..., E(X^n)$ are called moments. The moment generating function is defined as:
+\begin{align*}
+	M(t) &= E(e^{tx}) = \sum e^{tx}f(x) \\
+	m^{'}(0) &= E(X) \\
+	m^{''}(0) &= E(X^2)
+\end{align*}
+
+If $M_1 (t) = M_2 (t)$ then random variables $X_1 = X_2$
+
+\subsection{Discrete Distributions}
+\subsubsection{Binomial (Bernoulli) Random Variable}
+The binomial distribution expresses the number of successes in a sequence of n independent binary experiments.
+\begin{align*}
+	x_i = \begin{cases}
+	1 success \\
+	0 failure
+	\end{cases} \\
+	P(X_i = 1) = p, P(X_i=0) = 1 - p \\
+	P(X=k) = \dbinom{n}{k}p^k (1-p)^{n-k} \\
+	E(x)=np, var(x) = npq, \: \text{where} \: q=(1-p)
+\end{align*}
+
+\subsubsection{Poisson Distribution}
+The Poisson distribution expresses the probability of a given number of events occurring in a fixed interval of time if the events occur with a known average rate, $\lambda$, and independently. 
+\begin{align*}
+	P(X=k) = \frac{\lambda^k}{k!}e^{-\lambda} \\
+	E(x) = var(x) = \lambda	
+\end{align*}
+
+\subsubsection{Geometric Distribution}
+The geometric distribution expresses the probability of $n$ Bernoulli trials yields the first success.
+\begin{align*}
+	P(X=n) &= (1 - p)^{n-1} p\\
+	E(x) &= \frac{1}{p} \\
+	var(x) &= \frac{1-p}{p^2}
+\end{align*}
+The cumulative distribution function express the probability of at least $k$ trials before first success.
+\begin{align*}
+P(X\ge k) = (1-p)^{k-1}
+\end{align*}
+
+\subsubsection{Negative Binomial Distribution}
+The negative binomial distribution expresses the probability it takes $k$ trials until $r$th success.
+\begin{align*}
+	P(X=k) &= \binom{k-1}{r-1}p^r (1-p)^{k-r} \\
+	E(x) &= \frac{r}{p} \\
+	var(x) &= \frac{r(1-p)}{p^2}
+\end{align*}
+
+\subsubsection{Hypergeometric Distribution}
+The hypergeometric distribution expresses the probability of $k$ successes in $n$ draws, without replacement, from a population of size $N$ and $k$ successes.
+\begin{align*}
+	P(X=k) &= \frac{\binom{K}{k}\binom{N-K}{n-k}}{\binom{N}{n}} \\
+	E(X) &= \frac{nm}{N} \\
+	var(X) &= npq\binom{N-m}{N-1}
+\end{align*} 
+
+\section{Continuous Random Variable}
+$X$ is a continuous random variable if there exists a function $f(x)$ such that $f(x)$ is the non-negative domain of $x\in (-\infty, \infty)$ such that $P(X\in B) = \int_B f(x)dx$.
+\begin{align*}
+	P(-\infty\le x \le\infty) = 1 \\
+	P(X = a) = \int_{a}^{a}f(x)dx=0 \\
+	P(X<a) = \int_{-\infty}^{a}f(x)dx = F(a) \\
+	E(X) = \int_{-\infty}^{\infty}xf(x)dx \\
+	var(X) = \int_{-\infty}^{\infty}x^2 f(x)dx - \bigg(\int_{-\infty}^{\infty}x f(x)dx\bigg)^2 \\
+	M(t) = E(e^{tx}) = \int_{-\infty}^{\infty}e^{tx} f(x)dx
+\end{align*}
+
+\subsection{Continuous Distribution}
+\subsubsection{Uniform Distribution}
+The uniform distribution is uniformly distributed on interval $[a, b]$ if it assumes all values on $[a, b]$. It is represented by the probability density function:
+\begin{align*}
+	f(x) = \begin{cases}
+		\frac{1}{b-a}, a\le x\le b \\
+		0, \text{otherwise}
+	\end{cases}
+\end{align*}
+ and the cumulative distribution function:
+ \begin{align*}
+	 F(x)=P(X\le x)= \begin{cases}
+		 0, x\le a \\
+		 \frac{x-a}{b-a}, a\le x\le b \\
+		 1, otherwise
+	 \end{cases}
+ \end{align*}
+ 
+ \subsubsection{Exponential Distribution}
+ 
+
+
+\end{document}
