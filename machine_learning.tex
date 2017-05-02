@@ -1,0 +1,275 @@
+\title{Machine Learning Study Guide}
+\date{\today}
+
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\begin{document}
+	\maketitle
+	
+\section{Supervised vs Unsupervised Learning}
+With supervised learning the data set contains the output. Regression is for trying to predict results with continuous output while classification is for discrete output. Unsupervised learning is when the data set has no feedback and want to derive structure by clustering based on relationships.
+
+\section{Multivariate Linear Regression}
+\begin{align*}
+	h_\theta (x) = \theta_0 + \theta_1 x_1 + \theta_2 x_2 + ... + \theta_nx_n = \theta^Tx
+\end{align*}
+where we define the cost function by taking the mean square difference of the error:
+\begin{align*}
+	J(\theta)=\frac{1}{2}\sum_{i=1}^{m}(h_0(x_i)-y_i)^2
+\end{align*}
+
+\subsection{Gradient Descent}
+For each feature, repeat until convergence. $O(kn^2)$
+\begin{align*}
+	\theta_j = \theta_j - \alpha\frac{1}{m}\sum_{i=1}^{m}(h_\theta (x^{(i)})-y^{(i)})x_j^{(i)}\,\text{for}\, j=0:n
+\end{align*}
+
+\subsection{Feature Scaling}
+We can speed up descent by having input values in the same range with $x_i = \frac{x_i}{max(x_i)-min(x_i)}$ or with mean normalization $x_i = x_i - \mu_i$.  Combined $x_i = \frac{x_i - \mu_i}{max(x_i)-min(x_i)}$.
+
+\subsection{Learning Rate}
+Ensure that the cost function is decreasing with every iteration. Declare convergence if $J(\theta)$ decreases by less than threshold $\epsilon$.
+
+\subsection{Polynomial Regression}
+Combine multiple features into one ($x_1x_2$, or $x_1^2$)
+
+\subsection{Normal Equation}
+Can calculate theta directly without iteration where $\theta = (X^TX)^{-1}X^Ty$. This is slow for large n as $O(n^3)$ and need to calculate the inverse. Have to watch out for redundant (linearly dependent) features.
+
+\section{Classification}
+Binary classification is where $y$ can take on only two values, 0 and 1. Since $y$ values must be between 0 and 1, we can apply the sigmoid function (logistic function) to the new hypothesis.
+\begin{align*}
+	h_\theta (x)=g(\theta^TX)\,\text{where}\, g(z) = \frac{1}{1+e^{-z}}
+\end{align*}
+$h_\theta (x)$ will now give us the probability that our output is 1.
+
+\section{Logistic Regression}
+The new cost function becomes 
+\begin{align*}
+	J(\theta)=\frac{1}{m}\sum_{i=1}^{m}-log(h_\theta (x))y-log(1-h_\theta (x))(1-y)
+\end{align*}
+which guarantees that the cost function is convex.
+\begin{align*}
+	h = g(X\theta) \,\text{then}\, J(\theta)=\frac{1}{m}(-y^Tlog(h)-(1-y)^Tlog(1-h))
+\end{align*}
+then gradient descent iteration becomes:
+\begin{align*}
+	\theta = \theta - \frac{\alpha}{m}X^T(g(X\theta)-\overrightarrow{y})
+\end{align*}
+
+\section{Overfitting}
+Underfitting (high bias) is when the form of hypothesis function h maps poorly to the trend of the data, too simple, too few features. Overfitting (high variance) is when the hypothesis function fits the available data but does not generalize well to predict new data.
+\subsection{Addressing Overfitting}
+\begin{itemize}
+	\item Reduce the number of features
+	\item Regularization: reduce magnitude of parameters $\theta_J$ \begin{align*}
+		min_\theta \frac{1}{2m}\bigg[\sum_{i=1}^{m}(h_\theta(x^{(i)})-y^{(i)})^2 + \lambda\sum_{j=1}^{n}\theta_j^2\bigg]
+	\end{align*} where $\lambda$ is the regularization parameter. The gradient descent step becomes \begin{align*}
+		\theta_j = \theta_j (1-\alpha\frac{\lambda}{m})-\alpha\frac{1}{m}\sum (h_\theta(x^{i})-y^{(i)})x_j^{(i)}
+	\end{align*} where $1-\theta\frac{\lambda}{m}$ will always be less than 1, reducing $\theta_j$ on every update. The normal equation becomes \begin{align*}
+		\theta = (X^TX + \lambda L)^{-1}X^Ty
+	\end{align*} where $L$ is an $(n+1)\times (n+1)$ identity matrix with $x_{0,0}=0$. The cost function for regularization becomes \begin{align*}
+		J(\theta) = \frac{1}{m}\sum_{i=1}^{m}\bigg[y^{(i)}log(h_\theta(x^{(i)}))+(1-y^{(i)})log(1-h_\theta(x^{(i)}))\bigg]+\frac{\lambda}{2m}\sum_{j=1}^{n}\theta_j^2
+	\end{align*}
+\end{itemize}
+
+\section{Neural Networks}
+Neurons are computational units that take inputs that are channeled to outputs. $x_0$ of the input node is known as the bias unit. We use the logistic function as the activation function and $\theta$'s are weights.
+The hidden layers are defined as:
+\begin{itemize}
+	\item $a_i^{(j)} =$ activation unit of layer $j$
+	\item $\theta^{(j)} =$ matrix of weights controlling function mapping from layer $j$ to $j+1$
+\end{itemize}
+If the network has $s_j$ units in layer $j$ and $s_{j+1}$ units in layer $j+1$, then $\theta^{(j)}$ will be of dimension $s_{j+1}\times (s_j+1)$, the $+1$ coming from the bias nodes.
+
+\def\layersep{2.5cm}
+\begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
+\tikzstyle{every pin edge}=[<-,shorten <=1pt]
+\tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+\tikzstyle{input neuron}=[neuron, fill=green!50];
+\tikzstyle{output neuron}=[neuron, fill=red!50];
+\tikzstyle{hidden neuron}=[neuron, fill=blue!50];
+\tikzstyle{annot} = [text width=4em, text centered]
+
+% Draw the input layer nodes
+\foreach \name / \y in {1,...,4}
+% This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
+\node[input neuron, pin=left:Input \#\y] (I-\name) at (0,-\y) {};
+
+% Draw the hidden layer nodes
+\foreach \name / \y in {1,...,5}
+\path[yshift=0.5cm]
+node[hidden neuron] (H-\name) at (\layersep,-\y cm) {};
+
+% Draw the output layer node
+\node[output neuron,pin={[pin edge={->}]right:Output}, right of=H-3] (O) {};
+
+% Connect every node in the input layer with every node in the
+% hidden layer.
+\foreach \source in {1,...,4}
+\foreach \dest in {1,...,5}
+\path (I-\source) edge (H-\dest);
+
+% Connect every node in the hidden layer with the output layer
+\foreach \source in {1,...,5}
+\path (H-\source) edge (O);
+
+% Annotate the layers
+\node[annot,above of=H-1, node distance=1cm] (hl) {Hidden layer};
+\node[annot,left of=hl] {Input layer};
+\node[annot,right of=hl] {Output layer};
+\end{tikzpicture}
+\begin{align*}
+	a_1^{(2)} &= g\big(\theta_{10}^{(1)}x_0 + \theta_{11}^{(1)}x_1 + \theta_{12}^{(1)}x_2 + \theta_{13}^{(1)}x_3\big) \\
+	a_2^{(2)} &= g\big(\theta_{20}^{(1)}x_0 + \theta_{21}^{(1)}x_1 + \theta_{22}^{(1)}x_2 + \theta_{23}^{(1)}x_3\big) \\
+	a_3^{(2)} &= g\big(\theta_{30}^{(1)}x_0 + \theta_{31}^{(1)}x_1 + \theta_{32}^{(1)}x_2 + \theta_{33}^{(1)}x_3\big) \\
+	h_\theta(x) = a_1^{(3)} &= g\big(\theta_{10}^{(2)}x_0 + \theta_{11}^{(2)}x_1 + \theta_{12}^{(2)}x_2 + \theta_{13}^{(2)}x_3\big) \\
+\end{align*}
+To vectorize we let $z_k^{(2)} =\theta_{k0}^{(1)}x_0 + \theta_{k1}^{(1)}x_1 + \theta_{k2}^{(1)}x_2 + ... + \theta_{kn}^{(1)}x_n$ such that $a_k^{(2)} = g(z_k^{(2)})$ and $x = \begin{bmatrix}
+	x_0 \\ x_1 \\ \vdots \\ x_n
+\end{bmatrix}$, $z^{(j)} = \begin{bmatrix}
+z_1^{(j)} \\ z_2^{(j)} \\ \vdots \\ z_n^{(j)}
+\end{bmatrix}$\\
+When dealing with multiclass classification rewrite the classes as binary vectors of length equal to the number of classes.
+
+\subsection{Backpropagation}
+Given training set ${(x^{(i)}, y^{(i)}), (x^{(m)}, y^{(m)})})$, set $\Delta_{ij}^{(l)}=0\:\forall\: l,i,j$ then 
+\begin{align*}
+	\text{for} \:i=1 \:to\: m \\
+	\text{set} \:a^{(i)} = x^{(i)} \\
+	\text{perform forward propagation to compute}\: a^{(l)} \\
+	\text{using} y^{(i)}, \text{compute} \delta^{(L)}=a^{(L)}-y^{(i)} \\
+	\text{compute} \delta^{(L-1)}, \delta^{(L-2)},...,\delta^{(L)} \\
+	\Delta_{ij}^{(2)} = \Delta_{ij}^{(2)} + a_j^{(2)}\delta_i^{(l+1)} \\
+	D_{ij}^{(2)}=\frac{1}{m}\Delta_{ij}^{(2)} + \lambda\theta_{ij}^{(2)} if j\ne0 \\
+\end{align*}
+where $L$ is the total number of layers and $a^{(L)}$ is the vector of outputs of activation units for last layer.
+
+\subsection{Constructing a network}
+\begin{itemize}
+	\item set number of input and outputs (number of classes)
+	\item pick number of hidden units per layer
+	\item default to 1 hidden layer and if more than 1 recommend to have same number of units
+\end{itemize}
+
+\subsection{Training a network}
+\begin{itemize}
+	\item randomly initialize weights
+	\item perform forward propagation to get $h_\theta(x^{(i)})$ for any $x^{(i)}$
+	\item implement backpropagation to compute partial derivatives of cost function
+	\item use gradient checking to confirm backpropagation
+	\item use gradient descent or optimization function to minimize cost function
+\end{itemize}
+
+\section{Evaluating Hypothesis}
+To start, split the dataset into training and test set. Further split into training, cross validation, and test sets using cross validation. High bias is underfitting and high variance is overfitting. Training error will tend to decrease as the degree $d$ of the polynomial increases. Cross validation error will tend to decrease as we increase $d$ to a point and then will increase. This is visualized in Figure 1.\\ 
+
+A neural network with fewer parameters is prone to underfitting and is also computationally cheaper. A large neural network with more parameters is prone to overfitting and computationally expensive. In that case you can use regularization to address the overfitting. 
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\linewidth]{polynomial_learning.png}
+\caption{Learning curve with respect to polynomial degree}
+\label{fig:polynomiallearning}
+\end{figure}
+\subsection{Picking $\lambda$ for regularization}
+\begin{itemize}
+	\item Pick a range of $\lambda$'s and a set of models and learn $\theta$
+	\item Compute training error $J_{training}(\theta)$ with $\lambda=0$
+	\item Compute cross validation error $J_{CV}(\theta)$ with $\lambda=0$
+	\item Choose model with lowest $J_{CV}$
+\end{itemize}
+
+\subsection{Learning Curves}
+\begin{figure}
+\centering
+\includegraphics[width=0.7\linewidth]{learning_curves.png}
+\caption{Learning curve with respect to dataset size}
+\label{fig:learningcurves}
+\end{figure}
+If experiencing high bias:
+\begin{itemize}
+	\item Low training set size: causes $J_{train}(\theta)$ to be low and $J_{CV}(\theta)$ to be high
+	\item large training set size: both $J_{train}$ and $J_{CV}$ to be high
+	\item more data won't help high bias
+\end{itemize}
+If experiencing high variance:
+\begin{itemize}
+	\item Low training set size: $J_{train}$ low, $J_{CV}$ high
+	\item Large training set size: $J_{train}$ increase with $n$, $J_{CV}$
+	\item More data will help high variance
+\end{itemize}
+
+\section{Support Vector Machines}
+With support vector machines we want to find the line that best splits two classifications such that we choose the line with the largest margin between the two classes. 
+The cost function:
+\begin{align*}
+\underset{\theta}{min}C\sum_{i=1}^{m}\bigg[y^{(i)}cost_1(\theta^Tx^{(i)})+(1-y^{(i)})cost_0(\theta^Tx^{(i)})\bigg] + \frac{1}{2}\sum_{j=1}^{n}\theta_j^2
+\end{align*}
+Hypothesis:
+\begin{align*}
+	h_\theta \begin{cases}
+		1 & \theta^Tx\ge 0 \\
+		0 & \text{otherwise}
+	\end{cases}
+\end{align*}
+
+\subsection{Kernels}
+Compute features from similarity function, kernels, the data and some arbitrary landmark point. \\
+
+Gaussian Kernel:
+\begin{align*}
+	f = k(x, l^{(i)})=exp\bigg(-\frac{||x-l^{(1)}||^2}{2\sigma^2}\bigg)
+\end{align*}
+where the numerator is the Euclidean distance between $x$ and $l$. If $x$ is far from $l$ then $f\approx 0$.  If $x\approx l$ then $f\approx 1$. \\ 
+
+Choose initial landmarks at the same points as the training examples. Then map the landmarks (training examples) to features using the kernel function. Group the features into a vector:
+\begin{align*}
+	x\in R^{n+1} => f\in R^{m+1} \\
+	\text{Predict}\; y=1\; if\; \theta^Tf\ge 0
+\end{align*} 
+\begin{align*}
+\underset{\theta}{min}C\sum_{i=1}^{m}\bigg[y^{(i)}cost_1(\theta^Tf^{(i)})+(1-y^{(i)})cost_0(\theta^Tf^{(i)})\bigg] + \frac{1}{2}\theta^TM\theta
+\end{align*}
+ A large $C$ will yield lower bias, higher variance, a small $C$ will yield higher bias, lower variance. Large $\theta^2$ then the features $f_i$ vary more smoothly giving higher bias, lower variance. \\
+ 
+ If you have a large number of features relative to the number of training examples use logistic regression. If n is small and m is intermediate of size, then go with the SVM with Gaussian kernel.
+ 
+\section{K-mean clustering}
+Pick $K$ cluster centroids for the $K$ number of desired clusters. Assign points to the closest centroids. Move the centroid to the mean of the assigned points. Repeat assignment and move until convergence. 
+
+\subsection{Objective}
+Use the norm to get the distance between centroid and data point:
+\begin{align*}
+	\Vert x^{(i)} - \mu_k\Vert
+\end{align*}
+Where we find the index of the cluster centroid by finding the minimized L2 norm:
+\begin{align*}
+	\underset{k}{min}\Vert x^{(i)} - \mu_k\Vert^2
+\end{align*}
+The optimization objective is:
+\begin{align*}
+J(c^{(1)},...,c^{(m)},\mu_1,...,\mu_k) = \frac{1}{m}\sum_{i=1}^{m}\Vert x^{(i)} - \mu_{c^(i)}\Vert^2
+\end{align*}
+
+\subsection{Random Initialization}
+Should have $K<m$ training examples. Randomly pick $K$ training examples and set $\mu_1,...,\mu_k$ equal to these examples. Different initializations can lead to different solutions so run $X$ amount of times and choose the one with smallest cost.
+
+\subsection{Choosing the number of clusters}
+Can choose based on visual inspection. Elbow method where you run with a range of values for k, plot the cost, and choose the $K$ where it kinks (elbow). Might end up with a plot that is smooth and has no clear kink. Choose based on how this clustering will be used downstream.
+
+\section{Dimensionality Reduction}
+\subsection{Principal Component Analysis}
+PCA attempts to reduce the dimensionality by fitting the data to a lower dimensionality surface that minimizes the sum of square distances from the original plane to the new plane. For a 2-dimensional dataset, the goal is to reduce from the 2-dimension to a 1-dimension, find a direction (vector) onto which to project the data so as to minimize the projection error. For an $n$-dimensional dataset, reduce from $n$-dimension to $k$-dimension, find k vectors onto which to project the data, so as to minimize the projection error. Projecting onto the linear subspace defined by these vectors.
+
+Start by applying feature scaling/mean normalization. Then compute the covariance matrix and it's eigenvectors. The eigenvectors will be a matrix of size $n\times n$ and we chose the first $k$ vectors, $U_{reduce}$. We compute the lower dimensional dataset:
+\begin{align*}
+z = U_{reduce}^Tx
+\end{align*}
+
+	
+
+
+\end{document}

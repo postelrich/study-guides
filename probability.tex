@@ -155,7 +155,38 @@ The uniform distribution is uniformly distributed on interval $[a, b]$ if it ass
  \end{align*}
  
  \subsubsection{Exponential Distribution}
- 
+ The exponential distribution describes the time between events in the Poisson process, a process in which events occur continuously and independently at a constant average rate.
+ \begin{align*}
+	 f(x) &= \begin{cases}
+		 \lambda e^{-\lambda x}, x \ge 0, \lambda > 0 \\
+		 0, x < 0
+	 \end{cases} \\
+	 F(a) &= P(X\le a)=1-e^{-\lambda a} \\
+	 E(X) &= \frac{1}{\lambda} \\
+	 var(X) &= \frac{1}{\lambda^2}
+ \end{align*}
+
+\subsubsection{Normal Random Distribution}
+\begin{align*}
+	f(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{1}{2}(\frac{x-\mu}{\sigma})^2}
+\end{align*}
+\begin{itemize}
+	\item if $\sigma = 1, \mu = 0$ then $f(z) = \frac{1}{\sqrt{2\pi}}e^{\frac{-z^2}{2}}$ and $z$ is the standard normal random variable
+	\item $Y=aX+b$ then $Y$ is a normal random variable with parameters $a\mu + b, a^2 \sigma^2$
+	\item $m(t) = e^{\frac{t^2}{2}}$ is the moment generating function for the standard normal RV
+	\item the CDF for $Z$ is $\Phi (Z) = P(Z\le z) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{z}e^{-\frac{x^2}{2}}dx$
+	\item $P(a\le x\le b) = \Phi (b^*) - \Phi (a^*)$
+\end{itemize}
+
+\section{Limit Theorems}
+\begin{itemize}
+	\item The law of large numbers says that the average of a sequence of random variables converges to the expected average
+	\item The central limit theorem says the the sum of a large number of independent and identically distributed random variables has a distribution $\approx$ normal 
+	\item Markov's inequality: if X is a random variable such that $R_x \ge 0$ then for any $a>0, P(X\ge a) \le \frac{E(x)}{a}$
+	\item Chebyshev's inequality: if X is a random variable with finite mean and variance then for any $k>0, P(|x-\mu |\ge k) \le \frac{\sigma^2}{k^2}$
+\end{itemize}
+
+\section{Joint Random Variables}
 
 
 \end{document}
