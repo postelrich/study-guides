@@ -5,6 +5,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{tikz}
+\usepackage{hyperref}
 \begin{document}
 	\maketitle
 	
@@ -19,6 +20,14 @@ where we define the cost function by taking the mean square difference of the er
 \begin{align*}
 	J(\theta)=\frac{1}{2}\sum_{i=1}^{m}(h_0(x_i)-y_i)^2
 \end{align*}
+
+Assuming that the inputs are orthogonal then the estimators $\theta_j$ are equal to the univariate estimates. In order to orthogonalize the inputs:
+
+\begin{enumerate}
+    \item regress $x$ on $1$ to produce the residual $z=x-\bar{x}1$ 
+    \item regress $y$ on the residual z to give the coefficient $\hat{\theta_1}$
+\end{enumerate}
+
 
 \subsection{Gradient Descent}
 For each feature, repeat until convergence. $O(kn^2)$
@@ -37,6 +46,9 @@ Combine multiple features into one ($x_1x_2$, or $x_1^2$)
 
 \subsection{Normal Equation}
 Can calculate theta directly without iteration where $\theta = (X^TX)^{-1}X^Ty$. This is slow for large n as $O(n^3)$ and need to calculate the inverse. Have to watch out for redundant (linearly dependent) features.
+
+\subsection{Homoscedasticity}
+An assumption of linear regression is that the error terms are the same across all values of the independent variables. While heteroscedastic error terms don't affect the quality of the estimators, it produces biased standard errors. This affects the quality of significance tests and confidence intervals. Heteroscedasticity can be resolved by transforming the dependent variable or using weighted least squares instead of OLS.
 
 \section{Classification}
 Binary classification is where $y$ can take on only two values, 0 and 1. Since $y$ values must be between 0 and 1, we can apply the sigmoid function (logistic function) to the new hypothesis.
@@ -64,7 +76,7 @@ Underfitting (high bias) is when the form of hypothesis function h maps poorly t
 \subsection{Addressing Overfitting}
 \begin{itemize}
 	\item Reduce the number of features
-	\item Regularization: reduce magnitude of parameters $\theta_J$ \begin{align*}
+    \item Regularization: reduce magnitude of parameters $\theta_J$ \begin{align*}
 		min_\theta \frac{1}{2m}\bigg[\sum_{i=1}^{m}(h_\theta(x^{(i)})-y^{(i)})^2 + \lambda\sum_{j=1}^{n}\theta_j^2\bigg]
 	\end{align*} where $\lambda$ is the regularization parameter. The gradient descent step becomes \begin{align*}
 		\theta_j = \theta_j (1-\alpha\frac{\lambda}{m})-\alpha\frac{1}{m}\sum (h_\theta(x^{i})-y^{(i)})x_j^{(i)}
@@ -73,6 +85,7 @@ Underfitting (high bias) is when the form of hypothesis function h maps poorly t
 	\end{align*} where $L$ is an $(n+1)\times (n+1)$ identity matrix with $x_{0,0}=0$. The cost function for regularization becomes \begin{align*}
 		J(\theta) = \frac{1}{m}\sum_{i=1}^{m}\bigg[y^{(i)}log(h_\theta(x^{(i)}))+(1-y^{(i)})log(1-h_\theta(x^{(i)}))\bigg]+\frac{\lambda}{2m}\sum_{j=1}^{n}\theta_j^2
 	\end{align*}
+    \label{sec:regularization}
 \end{itemize}
 
 \section{Neural Networks}
@@ -264,12 +277,98 @@ Can choose based on visual inspection. Elbow method where you run with a range o
 \subsection{Principal Component Analysis}
 PCA attempts to reduce the dimensionality by fitting the data to a lower dimensionality surface that minimizes the sum of square distances from the original plane to the new plane. For a 2-dimensional dataset, the goal is to reduce from the 2-dimension to a 1-dimension, find a direction (vector) onto which to project the data so as to minimize the projection error. For an $n$-dimensional dataset, reduce from $n$-dimension to $k$-dimension, find k vectors onto which to project the data, so as to minimize the projection error. Projecting onto the linear subspace defined by these vectors.
 
+When we project the data $x$ to $z$, via the linear transformation $W$, the resulting representation has a diagonal covariance matrix which immediately implies that the individual columns of $z$ are mutually uncorrelated.  This ability of PCA to transform data into a representation where the elements are mutually uncorrelated is a very important property of PCA. It is a simple example of a representation that attempt to disentangle the unknown factors of variation underlying the data. In the case of PCA, this disentangling takes the form of finding a rotation of the input space that align the principal axes of variance with the basis of the new representation space associated with $z$. While correlation is an important category of dependency between elements of the data, we are also interested in learning representation that disentangle more complicated forms of feature dependencies. For this, we will need more than what can be done with a simple linear transformation.
+
+\begin{align*}
+Var[x] & = \frac{1}{n-1}X^TX \\
+& =  \frac{1}{n-1}(U\Sigma W^T)^TU\Sigma W^T \\
+& =  \frac{1}{n-1}W\Sigma U^TU\Sigma W^T \\
+& =  \frac{1}{n-1}W\Sigma^2 W^T \\
+z &= Wx\therefore \\
+Var[z] &= \frac{1}{n-1}Z^TZ \\
+& = \frac{1}{n-1}W^TX^TXW \\
+& = \frac{1}{n-1}WW^T\Sigma^2WW^T \\
+& = \frac{1}{n-1}\Sigma^2 \\
+\end{align*}
+
+where $W$ and $U$ are composed of orthonormal vectors $U^TU=I$.  
+
 Start by applying feature scaling/mean normalization. Then compute the covariance matrix and it's eigenvectors. The eigenvectors will be a matrix of size $n\times n$ and we chose the first $k$ vectors, $U_{reduce}$. We compute the lower dimensional dataset:
 \begin{align*}
 z = U_{reduce}^Tx
 \end{align*}
 
 	
+\section{Ensemble Methods}
+Ensemble methods use multiple learning algorithms to obtain better predictive performance than any of the models alone.
+
+\subsection{Bagging}
+Bagging, formerly known as bootstrap aggregating, involves having each model in the ensemble have equal weight. It trains each model on a random sample from the training set (usually uniform with replacement). Reduces variance.
+
+\subsection{Boosting}
+Boosting takes weak models and combines them into one strong model. Reduces bias.
+\subsubsection{Adaboost}
+Adaptive boosting is boosting giving a higher weight to stronger models. Each weak classifier is trained on a random subset of the total training set. Each sample gets a weight determining if it should be included in the training set. After training each classifier, increase the weight on the misclassified samples so that they make a larger part of the next classifier. Each classifier is given a weight depending on its accuracy. A classifier with 50\% accuracy is given zero weight, and less than 50\% is given negative weight.
+\subsubsection{Gradient Boosting Machine}
+GBM adds weak classifiers together where subsequent classifiers are regressed on the residuals of the previous classifier.
+
+\section{Variable/Model Selection}
+
+\subsection{$z$-score}
+To the hypothesis that a particular coefficient $\hat{\beta}_j = 0$ we get the standardized coefficient or Z-score:
+\begin{align*}
+z_j = \frac{\hat{\beta}_j}{\hat{\sigma}\sqrt{v_j}}
+\end{align*}
+
+where $v_j$ is the $j$th diagonal element of $(X^TX)^{-1}$. The $z_j$ is distributed under the t-distribution and a large value of $z_j$ will lead to reject the null hypothesis.
+
+\subsection{F score}
+To compare two models with a different number of dependent variables, we can use the F score to determine if the coefficients of the additional variables can be set to zero.
+
+\begin{align*}
+F = \frac{(RSS_0 - RSS_1)/(p_1 - p_0)}{RSS_1/(N-p_1 - 1)}
+\end{align*}
+
+\subsection{$R^2$}
+R-squared is a statistical measure of how close the data are to the fitted regression line. It is also known as the coefficient of determination, or the coefficient of multiple determination for multiple regression. The definition of R-squared is fairly straight-forward; it is the percentage of the response variable variation that is explained by a linear model.
+
+\begin{align*}
+R^2 &= 1 - \frac{RSS(f)}{RSS(y)} \\
+R^2 &= 1 - \frac{\sum (f_i - \bar{y})}{\sum (y_i - \bar{y})x`x`}
+\end{align*}
+
+\subsection{Akaike Information Criterion (AIC)}
+The AIC offers a relative estimate of the information lost when a given model is used to represent the process that generates the data. In doing so, it deals with the trade-off between the goodness of fit of the model and the complexity of the model.
+
+Let $\hat{L}$ be the maximized values of the likelihood function for the model; $\hat{L} = P(x|\hat{\theta},M)$, then the AIC value of the model is:
+
+\begin{align*}
+    AIC = 2k - 2ln(\hat{L})
+\end{align*}
+
+where $k$ is the number of estimated parameteres in the model.
+
+\subsection{Bayesian Information Criterion (BIC)}
+Similar to the AIC but also includes $n$, the number of data points in $x$:
+
+\begin{align*}
+    BIC = ln(n)k - 2ln(\hat{L})
+\end{align*}
+
+\subsection{Subset Selection}
+\subsubsection{Best subset regression}
+Finds for each $k \in {0, 1, 2,...,p}$ the subset of size $k$ that gives the smallest residual sum of squares.
+\subsubsection{Forward stepwise selection}
+Starts with the intercept and sequentially adds into the model the predictor that most improves the fit.
+\subsubsection{Backward stepwise selection}
+Starts with the full model and sequentially deletes predictors, typically using the F-ratio to choose the predictor to delete.
+
+\subsection{Shrinkage Methods}
+\subsubsection{Ridge Regression}
+See \hyperref[sec:regularization]{regularization}. Shrinks all directions, but shrinks low-variance directions more.
+\subsubsection{Lasso}
+Lasso is similar to ridge regression except penalizing by the L1 norm of the estimators.
+
 
 
 \end{document}
