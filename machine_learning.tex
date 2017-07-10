@@ -176,10 +176,39 @@ where $L$ is the total number of layers and $a^{(L)}$ is the vector of outputs o
 	\item use gradient descent or optimization function to minimize cost function
 \end{itemize}
 
-\section{Evaluating Hypothesis}
-To start, split the dataset into training and test set. Further split into training, cross validation, and test sets using cross validation. High bias is underfitting and high variance is overfitting. Training error will tend to decrease as the degree $d$ of the polynomial increases. Cross validation error will tend to decrease as we increase $d$ to a point and then will increase. This is visualized in Figure 1.\\ 
-
 A neural network with fewer parameters is prone to underfitting and is also computationally cheaper. A large neural network with more parameters is prone to overfitting and computationally expensive. In that case you can use regularization to address the overfitting. 
+
+\section{Decision Trees}
+
+\subsection{Regression Trees}
+Grow tree until some minimum node size, then prune tree using cost complexity pruning. Let $|T|$ denote the number of terminal nodes in $T$.
+Let
+\begin{align*}
+    \hat{c}_m &= \frac{1}{N_m}\sum y_i \\
+    Q_m(T) &= \frac{1}{N_m}\sum(y_i - \hat{c}_m)^2 \\
+\end{align*}
+then the cost complexity criterion is
+\begin{align*}
+    C_{\alpha}(T) &= \sum_{m=1}^{|T|}N_mQ_m(T)+\alpha |T| \\
+\end{align*}
+Want to find for each $\alpha$ the subtree to minimize $C_{\alpha}(T)$. The tuning parameter $\alpha \ge 0$ governs the tradeoff between tree size and its goodness of fit to the data. Large values of $\alpha$ result in smaller trees.
+
+\subsection{Classification Trees}
+Let
+\begin{align*}
+    \hat{p}_{mk} = \frac{1}{N_m}\sum I(y_i=k)
+\end{align*}
+be the proportion of class $k$ observations in node $m$. Classify the observations in node $m$ to class $k(m)=argmax_k\hat{p}_{km}$, the majority class in node $m$. Different measures $Q_m(T)$ of node impurity include the following:
+\begin{itemize}
+    \item Misclassification error: $1 - \hat{p}_{mk(m)}$
+    \item Gini index: $\sum_{k=1}^{K}\hat{p}_{mk}(1-\hat{p}_{mk})$
+    \item Cross entropy: $-\sum_{k=1}^{K}\hat{p}_{mk}log\hat{p}_{mk}$
+\end{itemize}
+Cross entropy and the Gini index are differentiable and more amenable to numerical optimization. They are also more sensitive to changes in the node probabilities than the misclassification rate. For this reason, they should be used when growing the tree. To guide cost-complexity pruning, misclassification rate is typically used.
+
+
+\section{Evaluating a Hypothesis}
+To start, split the dataset into training and test set. Further split into training, cross validation, and test sets using cross validation. High bias is underfitting and high variance is overfitting. Training error will tend to decrease as the degree $d$ of the polynomial increases. Cross validation error will tend to decrease as we increase $d$ to a point and then will increase. This is visualized in Figure 1.\\ 
 
 \begin{figure}
 \centering
@@ -188,7 +217,7 @@ A neural network with fewer parameters is prone to underfitting and is also comp
 \label{fig:polynomiallearning}
 \end{figure}
 \subsection{Picking $\lambda$ for regularization}
-\begin{itemize}
+\begin{&itemize}
 	\item Pick a range of $\lambda$'s and a set of models and learn $\theta$
 	\item Compute training error $J_{training}(\theta)$ with $\lambda=0$
 	\item Compute cross validation error $J_{CV}(\theta)$ with $\lambda=0$
@@ -298,12 +327,14 @@ Start by applying feature scaling/mean normalization. Then compute the covarianc
 z = U_{reduce}^Tx
 \end{align*}
 
-	
 \section{Ensemble Methods}
 Ensemble methods use multiple learning algorithms to obtain better predictive performance than any of the models alone.
 
 \subsection{Bagging}
 Bagging, formerly known as bootstrap aggregating, involves having each model in the ensemble have equal weight. It trains each model on a random sample from the training set (usually uniform with replacement). Reduces variance.
+
+\subsection{Random Forest}
+Sample N cases at random with replacement to create a subset of the data. At each node, select a random subset of features and choose the predictor that provides the best split. The reason for doing this is the correlation of the trees in an ordinary bootstrap sample: if one or a few features are very strong predictors for the repsonse variable, these features will be selecting in many of the $B$ trees, causing them to become correlated.
 
 \subsection{Boosting}
 Boosting takes weak models and combines them into one strong model. Reduces bias.
@@ -315,7 +346,7 @@ GBM adds weak classifiers together where subsequent classifiers are regressed on
 \section{Variable/Model Selection}
 
 \subsection{$z$-score}
-To the hypothesis that a particular coefficient $\hat{\beta}_j = 0$ we get the standardized coefficient or Z-score:
+To test the hypothesis that a particular coefficient $\hat{\beta}_j = 0$ we get the standardized coefficient or Z-score:
 \begin{align*}
 z_j = \frac{\hat{\beta}_j}{\hat{\sigma}\sqrt{v_j}}
 \end{align*}
