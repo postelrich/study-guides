@@ -36,7 +36,12 @@ For each feature, repeat until convergence. $O(kn^2)$
 \end{align*}
 
 \subsection{Feature Scaling}
-We can speed up descent by having input values in the same range with $x_i = \frac{x_i}{max(x_i)-min(x_i)}$ or with mean normalization $x_i = x_i - \mu_i$.  Combined $x_i = \frac{x_i - \mu_i}{max(x_i)-min(x_i)}$.
+Since the range of values of raw data varies widely, objective functions will not work properly without normalization. For example, the majority of classifiers calculate the distance between two points by the Euclidean distance. If one of the features has a broad range of values, the distance will be governed by the this particular feature. Therefore, the range of all features should be normalized so that each feature contributes approximately proportionately to the final distance. Also, gradient descent converges much faster with feature scaling than without it. Some methods include:
+\begin{itemize}
+    \item Rescaling $x^`= \frac{x-min(x)}{max(x)-min(x)}$
+    \item Standardization $x^` = \frac{x-\bar{x}}{\sigma}$
+    \item Scaling to unit length $x^` = \frac{x}{\Vert x\Vert}$
+\end{itemize}
 
 \subsection{Learning Rate}
 Ensure that the cost function is decreasing with every iteration. Declare convergence if $J(\theta)$ decreases by less than threshold $\epsilon$.
@@ -53,7 +58,7 @@ An assumption of linear regression is that the error terms are the same across a
 \section{Classification}
 Binary classification is where $y$ can take on only two values, 0 and 1. Since $y$ values must be between 0 and 1, we can apply the sigmoid function (logistic function) to the new hypothesis.
 \begin{align*}
-	h_\theta (x)=g(\theta^TX)\,\text{where}\, g(z) = \frac{1}{1+e^{-z}}
+    h_\theta (x)=g(\theta^TX)\ & ,\text{where}\, g(z) = \frac{1}{1+e^{-z}}
 \end{align*}
 $h_\theta (x)$ will now give us the probability that our output is 1.
 
@@ -334,7 +339,7 @@ Ensemble methods use multiple learning algorithms to obtain better predictive pe
 Bagging, formerly known as bootstrap aggregating, involves having each model in the ensemble have equal weight. It trains each model on a random sample from the training set (usually uniform with replacement). Reduces variance.
 
 \subsection{Random Forest}
-Sample N cases at random with replacement to create a subset of the data. At each node, select a random subset of features and choose the predictor that provides the best split. The reason for doing this is the correlation of the trees in an ordinary bootstrap sample: if one or a few features are very strong predictors for the repsonse variable, these features will be selecting in many of the $B$ trees, causing them to become correlated.
+Sample N cases at random with replacement to create a subset of the data. At each node, select a random subset of features and choose the predictor that provides the best split. The reason for doing this is the correlation of the trees in an ordinary bootstrap sample: if one or a few features are very strong predictors for the repsonse variable, these features will be selected in many of the $B$ trees, causing them to become correlated.
 
 \subsection{Boosting}
 Boosting takes weak models and combines them into one strong model. Reduces bias.
