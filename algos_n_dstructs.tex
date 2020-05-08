@@ -473,7 +473,7 @@ bfs(graph *g, int start) {
 The vertex-coloring problem seeks to assign a label to each vertex of graph such that no edge links any two vertices of the same color. A graph is bipartite if it can be colored without conflicts while using only two colors.
 
 \subsection{Depth-First Search}
-The difference between BFS and DFS results is in the other in which they explore vertices. This order depends completely upon the container data structure used to store the discovered but not processed vertices. Using a queue, we explore the oldest unprocessed vertices first. Using a stack, we explore the vertices along a path, visiting a new neighbor if one is available.
+The difference between BFS and DFS results is in the order in which they explore vertices. This order depends completely upon the container data structure used to store the discovered but not processed vertices. Using a queue, we explore the oldest unprocessed vertices first. Using a stack, we explore the vertices along a path, visiting a new neighbor if one is available.
 
 \begin{lstlisting}[language=C]
 dfs(graph *g, int v) {
